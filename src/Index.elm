@@ -5,6 +5,46 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Signal exposing (Signal, Address)
 import String
+import Util exposing (..)
+
+
+-- CONSTANTS
+
+
+iconPath = "vendor/open-iconic-master/png"
+guiPackageSeparator = span [ class "package-separator" ] [ text "/" ]
+guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
+fileIcon = basicIcon "file-4x.png"
+folderIcon = basicIcon "folder-4x.png"
+packageIcon = basicIcon "book-4x.png"
+
+clearfix : Html
+clearfix = div [ class "clearfix" ] []
+
+
+-- UTILITY FUNCTIONS
+
+
+packageUrl : Package -> String
+packageUrl {account, name, version} = "http://package.elm-lang.org/packages" `slash` account `slash` name `slash` version
+
+
+accountUrl : Package -> String
+accountUrl {account} = "https://github.com" `slash` account
+
+
+basicIcon name =
+  img [ src <| iconPath `slash` name, width 12, height 12 ] []
+
+
+iconBox : String -> Html -> Html
+iconBox position icon =
+  span
+    [ class <| "icon " ++ position ]
+    [ icon ]
+
+
+-- TYPES
 
 
 type alias Model =
@@ -22,41 +62,7 @@ type alias Package =
   }
 
 
-iconPath = "vendor/open-iconic-master/png"
-
-
-isSuffixOf = String.endsWith
-
-
-packageUrl : Package -> String
-packageUrl {account, name, version} = "http://package.elm-lang.org/packages" `slash` account `slash` name `slash` version
-
-
-accountUrl : Package -> String
-accountUrl {account} = "https://github.com" `slash` account
-
-
-basicIcon name =
-  img [ src <| iconPath `slash` name, width 12, height 12 ] []
-
-
-fileIcon = basicIcon "file-4x.png"
-folderIcon = basicIcon "folder-4x.png"
-packageIcon = basicIcon "book-4x.png"
-
-
-iconBox : String -> Html -> Html
-iconBox position icon =
-  span
-    [ class <| "icon " ++ position ]
-    [ icon ]
-
-
-slash : String -> String -> String
-slash a b =
-  if "/" `isSuffixOf` a
-    then a ++ b
-    else a ++ "/" ++ b
+-- VIEW
 
 
 view : Maybe Model -> Html
@@ -77,40 +83,30 @@ view model =
     model |> Maybe.map view' |> Maybe.withDefault modelMissing
 
 
-clearfix : Html
-clearfix = div [ class "clearfix" ] []
-
-
 pageHeader : Model -> Html
 pageHeader {currentFolder} =
   header
     []
     [ div
       [ class "header-wrapper" ]
-      [ div [ class "current-folder left" ] [ text currentFolder ]
+      [ div [ class "current-folder left" ] <| formatSubpathNavigation currentFolder
       , clearfix
       ]
     ]
 
+
 folderView : Model -> Html
 folderView {currentFolder, folders, files} =
-  let
-    subfolderNames = String.split "/" currentFolder
-    subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" subfolderNames
-    subfolders = List.map2 ((,)) subfolderNames subFolderPaths
-  in
-    section
-      [ class "folder-navigation" ]
-      [ h2 [] <|
-        List.intersperse guiPathSeparator <|
-          List.map (\(name, path) -> a [ href path ] [ text name ]) subfolders
-      , div
-        [ class "folder view left" ]
-        (div [ class "box-header display" ] [ text "File Navigation" ] ::
-          List.map (folderDisplay currentFolder) folders ++
-            List.map (fileDisplay currentFolder) files
-        )
-      ]
+  section
+    [ class "folder-navigation" ]
+    [ h2 [] <| formatSubpathNavigation currentFolder
+    , div
+      [ class "folder view left" ]
+      (div [ class "box-header display" ] [ text "File Navigation" ] ::
+        List.map (folderDisplay currentFolder) folders ++
+          List.map (fileDisplay currentFolder) files
+      )
+    ]
 
 
 folderDisplay : String -> String -> Html
@@ -130,10 +126,21 @@ fileDisplay basefolder file =
         [ iconBox "left" fileIcon, span [ class fileClass ] [ text file ] ]
       ] ++
         ( if ".elm" `isSuffixOf` file
-            then [ a [ class "repl-link" ] [ text "REPL" ], a [ class "debug-link" ] [ text "Debug" ] ]
+            then [ a [ class "repl-link" ] [ text "REPL" ]
+                 , a [ class "debug-link", href <| file ++ "?debug" ] [ text "Debug" ] ]
             else []
         )
 
+
+formatSubpathNavigation : String -> List Html
+formatSubpathNavigation path =
+  let
+    subfolderNames = String.split "/" path
+    subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" subfolderNames
+    subfolders = List.map2 ((,)) subfolderNames subFolderPaths
+  in
+    List.intersperse guiPathSeparator <|
+      List.map (\(name, path) -> a [ href path ] [ text name ]) subfolders
 
 
 packagesView : List Package -> Html
@@ -164,8 +171,8 @@ packageDisplay package =
       ]
 
 
-guiPackageSeparator = span [ class "package-separator" ] [ text "/" ]
-guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
+-- SIGNALS
+
 
 main : Signal Html
 main = Signal.constant <| view modelPort

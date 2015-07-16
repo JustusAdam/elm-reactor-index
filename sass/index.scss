@@ -13,6 +13,9 @@ header {
   background-color: $blue;
   font-weight: bold;
   color: white;
+  a {
+    color: $grey;
+  }
 }
 
 .header-wrapper {
@@ -78,6 +81,10 @@ a {
 .repl-link, .debug-link {
   padding: 5px;
   color: darken($grey, 20%);
+}
+
+.repl-link:hover, .debug-link:hover {
+  text-decoration: underline;
 }
 
 .display {
