@@ -1,6 +1,9 @@
 $pagewidth: 960px;
-$grey: #fafafa;
+$light-grey: #fafafa;
 $blue: rgb(85, 134, 230);
+$dark-grey: darken($light-grey, 70%);
+$grey: darken($light-grey, 20%);
+
 
 body {
   font-family: "Open Sans", "Arial", sans-serif;
@@ -13,8 +16,10 @@ header {
   background-color: $blue;
   font-weight: bold;
   color: white;
+  box-shadow: 0 0 7px $dark-grey;
+
   a {
-    color: $grey;
+    color: $light-grey;
   }
 }
 
@@ -55,17 +60,18 @@ a {
 }
 
 .box {
-  // background-color: $grey;
-  border: 1px solid darken($grey, 20%);
+  // background-color: $light-grey;
+  border: 1px solid darken($light-grey, 20%);
   border-radius: 5px;
+  // box-shadow: 0px 2px 5px $grey;
 }
 
 .box-element {
-  border-top: 1px solid darken($grey, 10%);
+  border-top: 1px solid darken($light-grey, 10%);
 }
 
 .box-header {
-  background-color: $grey;
+  background-color: $light-grey;
   text-align: center;
 }
 
@@ -75,12 +81,12 @@ a {
 }
 
 .file-name.elm {
-  width: 58%;
+  width: 75%;
 }
 
 .repl-link, .debug-link {
   padding: 5px;
-  color: darken($grey, 20%);
+  color: darken($light-grey, 20%);
 }
 
 .repl-link:hover, .debug-link:hover {
@@ -89,7 +95,6 @@ a {
 
 .display {
   display: block;
-  width: 300px;
   overflow: hidden;
   padding: 7px 12px;
 }
@@ -100,12 +105,12 @@ a {
 
 .folder.view {
   @extend .box;
-  min-width: 300px;
+  width: 600px;
 }
 
 .packages.view {
   @extend .box;
-
+  width: 300px;
 
 }
 
