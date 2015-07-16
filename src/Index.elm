@@ -85,18 +85,32 @@ pageHeader : Model -> Html
 pageHeader {currentFolder} =
   header
     []
-    [ div [ class "current-folder left" ] [ text currentFolder ]
-    , clearfix
+    [ div
+      [ class "header-wrapper" ]
+      [ div [ class "current-folder left" ] [ text currentFolder ]
+      , clearfix
+      ]
     ]
 
 folderView : Model -> Html
 folderView {currentFolder, folders, files} =
-  div
-    [ class "folder view left" ]
-    (div [ class "box-header display" ] [ text "File Navigation" ] ::
-      List.map (folderDisplay currentFolder) folders ++
-        List.map (fileDisplay currentFolder) files
-    )
+  let
+    subfolderNames = String.split "/" currentFolder
+    subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" subfolderNames
+    subfolders = List.map2 ((,)) subfolderNames subFolderPaths
+  in
+    section
+      [ class "folder-navigation" ]
+      [ h2 [] <|
+        List.intersperse guiPathSeparator <|
+          List.map (\(name, path) -> a [ href path ] [ text name ]) subfolders
+      , div
+        [ class "folder view left" ]
+        (div [ class "box-header display" ] [ text "File Navigation" ] ::
+          List.map (folderDisplay currentFolder) folders ++
+            List.map (fileDisplay currentFolder) files
+        )
+      ]
 
 
 folderDisplay : String -> String -> Html
@@ -133,19 +147,25 @@ packagesView packages =
 packageDisplay : Package -> Html
 packageDisplay package =
   let
-    {account, name} = package
+    {account, name, version} = package
   in
     div
       [ class "package display element" ]
-      [ iconBox "left" packageIcon
-      , a [ href <| accountUrl package ] [ text account ]
-      , packageSeparator
-      , a [ href <| packageUrl package ] [ text name ]
+      [ div
+        [ class "package-name left" ]
+        [ iconBox "left" packageIcon
+        , a [ href <| accountUrl package ] [ text account ]
+        , guiPackageSeparator
+        , a [ href <| packageUrl package ] [ text name ]
+        ]
+      , div
+        [ class "package-version right" ]
+        [ text version ]
       ]
 
 
-packageSeparator = span [ class "package-separator" ] [ text "/" ]
-
+guiPackageSeparator = span [ class "package-separator" ] [ text "/" ]
+guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 
 main : Signal Html
 main = Signal.constant <| view modelPort

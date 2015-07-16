@@ -10,10 +10,13 @@ body {
 
 header {
   width: 100%;
-  padding: 20px;
   background-color: $blue;
   font-weight: bold;
   color: white;
+}
+
+.header-wrapper {
+  padding: 20px;
 }
 
 a {
@@ -35,9 +38,17 @@ a {
   margin-right: auto;
 }
 
-.package-separator {
+.package-separator, .path-separator {
   display: inline-block;
   margin: 0 5px;
+}
+
+.package-name {
+  width: 70%;
+}
+
+.package-versions {
+  width: 30%;
 }
 
 .box {
