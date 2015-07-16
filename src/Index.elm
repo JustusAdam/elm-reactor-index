@@ -88,12 +88,12 @@ folderView {currentFolder, folders, files} =
 
 folderDisplay : String -> String -> Html
 folderDisplay basefolder folder =
-  a [ class "folder element display", href <| basefolder `slash` folder ] [ iconBox "left" folderIcon, text folder ]
+  a [ class "folder element display", href <| folder ] [ iconBox "left" folderIcon, text folder ]
 
 
 fileDisplay : String -> String -> Html
 fileDisplay basefolder file =
-  a [ class "file element display", href <| basefolder `slash` file ] [ iconBox "left" fileIcon, text file ]
+  a [ class "file element display", href <| file ] [ iconBox "left" fileIcon, text file ]
 
 
 packagesView : List Package -> Html
