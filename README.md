@@ -4,10 +4,12 @@ A new index page/folder navigation for [elm-reactor](https://github.com/elm-lang
 
 ## Testing
 
-Needs compass to compile the stylesheets.
+Needs a [sass](http://sass-lang.org) compiler, such as [compass](http://compass-style.org), to compile the stylesheets.
 
 And `elm make` to compile the elm code.
 
+Open index.html.
+
 ## Disclaimer
 
-Links will obviously not work yet, the backend server is missing.
+Links to individual files will obviously not work, the backend server is not present.
