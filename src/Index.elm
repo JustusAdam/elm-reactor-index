@@ -4,7 +4,7 @@ module Index where
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Signal exposing (Signal, Address)
-import String exposing (endsWith)
+import String
 
 
 type alias Model =
@@ -17,10 +17,23 @@ type alias Model =
 
 type alias Package =
   { name : String
+  , account : String
+  , version : String
   }
 
 
 iconPath = "vendor/open-iconic-master/png"
+
+
+isSuffixOf = String.endsWith
+
+
+packageUrl : Package -> String
+packageUrl {account, name, version} = "http://package.elm-lang.org/packages" `slash` account `slash` name `slash` version
+
+
+accountUrl : Package -> String
+accountUrl {account} = "https://github.com" `slash` account
 
 
 basicIcon name =
@@ -41,7 +54,7 @@ iconBox position icon =
 
 slash : String -> String -> String
 slash a b =
-  if endsWith "/" a
+  if "/" `isSuffixOf` a
     then a ++ b
     else a ++ "/" ++ b
 
@@ -94,7 +107,7 @@ folderDisplay basefolder folder =
 fileDisplay : String -> String -> Html
 fileDisplay basefolder file =
   let
-   fileClass = if endsWith ".elm" file then "elm file-name" else "file-name"
+   fileClass = if ".elm" `isSuffixOf` file then "elm file-name" else "file-name"
   in
     div
       [ class "element display" ]
@@ -102,7 +115,7 @@ fileDisplay basefolder file =
         [ class "file", href <| file ]
         [ iconBox "left" fileIcon, span [ class fileClass ] [ text file ] ]
       ] ++
-        ( if endsWith ".elm" file
+        ( if ".elm" `isSuffixOf` file
             then [ a [ class "repl-link" ] [ text "REPL" ], a [ class "debug-link" ] [ text "Debug" ] ]
             else []
         )
@@ -118,7 +131,20 @@ packagesView packages =
 
 
 packageDisplay : Package -> Html
-packageDisplay {name} = div [ class "package display element" ] [ iconBox "left" packageIcon, text name ]
+packageDisplay package =
+  let
+    {account, name} = package
+  in
+    div
+      [ class "package display element" ]
+      [ iconBox "left" packageIcon
+      , a [ href <| accountUrl package ] [ text account ]
+      , packageSeparator
+      , a [ href <| packageUrl package ] [ text name ]
+      ]
+
+
+packageSeparator = span [ class "package-separator" ] [ text "/" ]
 
 
 main : Signal Html

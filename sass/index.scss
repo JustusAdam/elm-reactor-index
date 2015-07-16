@@ -35,6 +35,11 @@ a {
   margin-right: auto;
 }
 
+.package-separator {
+  display: inline-block;
+  margin: 0 5px;
+}
+
 .box {
   // background-color: $grey;
   border: 1px solid darken($grey, 20%);
