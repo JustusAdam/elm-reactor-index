@@ -14,9 +14,29 @@ import Util exposing (..)
 iconPath = "open-iconic/png"
 guiDependencySeparator = span [ class "package-separator" ] [ text "/" ]
 guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
-fileIcon = basicIcon "file-4x.png"
-folderIcon = basicIcon "folder-4x.png"
-packageIcon = basicIcon "book-4x.png"
+standardIconType = ".png"
+standardIconSize = "4x"
+fileIcon = basicIcon "file"
+folderIcon = basicIcon "folder"
+packageIcon = basicIcon "book"
+htmlIcon = basicIcon "browser"
+imageIcon = basicIcon "aperture"
+codeIcon = basicIcon "code"
+elmIcon = basicIcon "cog"
+textIcon = basicIcon "justify-left"
+
+endings =
+  [ ("elm", elmIcon)
+  , ("jpg", imageIcon)
+  , ("jpeg", imageIcon)
+  , ("png", imageIcon)
+  , ("gif", imageIcon)
+  , ("html", htmlIcon)
+  , ("", fileIcon)
+  , ("hs", codeIcon)
+  , ("txt", textIcon)
+  ]
+
 
 clearfix : Html
 clearfix = div [ class "clearfix" ] []
@@ -38,7 +58,7 @@ accountUrl {account} = "https://github.com" `slash` account
 
 
 basicIcon name =
-  img [ src <| iconPath `slash` name, width 12, height 12 ] []
+  img [ src <| iconPath `slash` name ++ "-" ++ standardIconSize ++ standardIconType, width 12, height 12 ] []
 
 
 iconBox : String -> Html -> Html
@@ -46,6 +66,11 @@ iconBox position icon =
   span
     [ class <| "icon " ++ position ]
     [ icon ]
+
+
+getIcon : String -> Html
+getIcon file =
+  Maybe.withDefault fileIcon <| find (takeExtension file) endings
 
 
 -- TYPES
@@ -56,6 +81,7 @@ type alias Model =
   , folders       : List String
   , files         : List String
   , dependencies  : List Dependency
+  , package       : Maybe Package
   }
 
 
@@ -63,6 +89,14 @@ type alias Dependency =
   { name    : String
   , account : String
   , version : String
+  }
+
+
+type alias Package =
+  { version : String
+  , repository : String
+  , summary : String
+  , license : String
   }
 
 
@@ -74,15 +108,20 @@ view model =
   let
     modelMissing = div [ class "alert" ] [ text "no folder was found" ]
     view' model =
-      div
-        []
-        [ pageHeader model
-        , div
-          [ class "centered page-wrapper" ]
-          [ folderView model
-          , dependenciesView model.dependencies
+      -- let
+      --   lambd a = [ packageDisplay a ]
+      --   packageView = Maybe.withDefault [] (Maybe.map lambd model.package)
+      -- in
+        div
+          []
+          [ pageHeader model
+          , div
+            [ class "centered page-wrapper" ]
+            <| [ folderView model
+               , dependenciesView model.dependencies
+               ]
+                -- ++ packageView
           ]
-        ]
   in
     model |> Maybe.map view' |> Maybe.withDefault modelMissing
 
@@ -127,7 +166,7 @@ fileDisplay basefolder file =
       [ class "element display" ]
       <| [ a
         [ class "file", href <| file ]
-        [ iconBox "left" fileIcon, span [ class fileClass ] [ text file ] ]
+        [ iconBox "left" <| getIcon file, span [ class fileClass ] [ text file ] ]
       ] ++
         ( if ".elm" `isSuffixOf` file
             then [ a [ class "repl-link", href <| file ++ "?repl" ] [ text "REPL" ]
@@ -173,6 +212,16 @@ dependencyView package =
         [ class "package-version right" ]
         [ text version ]
       ]
+
+
+packageDisplay : Package -> Html
+packageDisplay {version, summary, repository} =
+  div
+    [ class "box" ]
+    [ div [ class "box-item" ] [ text <| "Package Version: " ++ version ]
+    , div [ class "box-item" ] [ text summary ]
+    , div [ class "box-item" ] [ text repository ]
+    ]
 
 
 -- SIGNALS

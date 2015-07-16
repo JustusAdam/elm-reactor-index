@@ -2,7 +2,13 @@
   document.initialModel = {
     currentFolder: "test/foo/bar",
     folders: ["one", "two", "three"],
-    files: ["answer42.txt", "Index.elm", "Conquer.hs"],
-    dependencies: [{ name : "elm-html", account : "evancz", version : "1.0.0" }, { name : "elm-core", account : "elm-lang", version : "2.0.0" }]
+    files: ["answer42.txt", "Index.elm", "Conquer.hs", "photo.jpg"],
+    dependencies: [{ name : "elm-html", account : "evancz", version : "1.0.0" }, { name : "elm-core", account : "elm-lang", version : "2.0.0" }],
+    package: {
+      version: "1.0.0",
+      repository: "https://github.com/foo/bar",
+      license: "BSD3",
+      summary: "A new package"
+    }
   }
 })();
