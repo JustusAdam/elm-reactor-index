@@ -41,7 +41,7 @@ iconBox position icon =
 
 slash : String -> String -> String
 slash a b =
-  if a `endsWith` "/"
+  if endsWith "/" a
     then a ++ b
     else a ++ "/" ++ b
 
@@ -80,7 +80,7 @@ folderView : Model -> Html
 folderView {currentFolder, folders, files} =
   div
     [ class "folder view left" ]
-    (div [ class "box-header display" ] [ text "Folder Contents" ] ::
+    (div [ class "box-header display" ] [ text "File Navigation" ] ::
       List.map (folderDisplay currentFolder) folders ++
         List.map (fileDisplay currentFolder) files
     )
@@ -93,7 +93,20 @@ folderDisplay basefolder folder =
 
 fileDisplay : String -> String -> Html
 fileDisplay basefolder file =
-  a [ class "file element display", href <| file ] [ iconBox "left" fileIcon, text file ]
+  let
+   fileClass = if endsWith ".elm" file then "elm file-name" else "file-name"
+  in
+    div
+      [ class "element display" ]
+      <| [ a
+        [ class "file", href <| file ]
+        [ iconBox "left" fileIcon, span [ class fileClass ] [ text file ] ]
+      ] ++
+        ( if endsWith ".elm" file
+            then [ a [ class "repl-link" ] [ text "REPL" ], a [ class "debug-link" ] [ text "Debug" ] ]
+            else []
+        )
+
 
 
 packagesView : List Package -> Html

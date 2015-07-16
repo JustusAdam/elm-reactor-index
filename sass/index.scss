@@ -47,7 +47,21 @@ a {
 
 .box-header {
   background-color: $grey;
-  font-weight: bold;
+  text-align: center;
+}
+
+.file-name {
+  display: inline-block;
+  width: 90%;
+}
+
+.file-name.elm {
+  width: 58%;
+}
+
+.repl-link, .debug-link {
+  padding: 5px;
+  color: darken($grey, 20%);
 }
 
 .display {
