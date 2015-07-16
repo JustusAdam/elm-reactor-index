@@ -12,3 +12,6 @@ slash a b =
   if "/" `isSuffixOf` a
     then a ++ b
     else a ++ "/" ++ b
+
+
+splitPath = String.split "/"

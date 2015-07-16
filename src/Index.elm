@@ -11,7 +11,7 @@ import Util exposing (..)
 -- CONSTANTS
 
 
-iconPath = "vendor/open-iconic-master/png"
+iconPath = "open-iconic/png"
 guiPackageSeparator = span [ class "package-separator" ] [ text "/" ]
 guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 fileIcon = basicIcon "file-4x.png"
@@ -26,7 +26,11 @@ clearfix = div [ class "clearfix" ] []
 
 
 packageUrl : Package -> String
-packageUrl {account, name, version} = "http://package.elm-lang.org/packages" `slash` account `slash` name `slash` version
+packageUrl {account, name, version} =
+  "http://package.elm-lang.org/packages"
+  `slash` account
+  `slash` name
+  `slash` version
 
 
 accountUrl : Package -> String
@@ -49,14 +53,14 @@ iconBox position icon =
 
 type alias Model =
   { currentFolder : String
-  , folders  : List String
-  , files    : List String
-  , packages : List Package
+  , folders       : List String
+  , files         : List String
+  , packages      : List Package
   }
 
 
 type alias Package =
-  { name : String
+  { name    : String
   , account : String
   , version : String
   }
@@ -126,7 +130,7 @@ fileDisplay basefolder file =
         [ iconBox "left" fileIcon, span [ class fileClass ] [ text file ] ]
       ] ++
         ( if ".elm" `isSuffixOf` file
-            then [ a [ class "repl-link" ] [ text "REPL" ]
+            then [ a [ class "repl-link", href <| file ++ "?repl" ] [ text "REPL" ]
                  , a [ class "debug-link", href <| file ++ "?debug" ] [ text "Debug" ] ]
             else []
         )
@@ -135,12 +139,12 @@ fileDisplay basefolder file =
 formatSubpathNavigation : String -> List Html
 formatSubpathNavigation path =
   let
-    subfolderNames = String.split "/" path
+    subfolderNames = splitPath path
     subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" subfolderNames
     subfolders = List.map2 ((,)) subfolderNames subFolderPaths
   in
-    List.intersperse guiPathSeparator <|
-      List.map (\(name, path) -> a [ href path ] [ text name ]) subfolders
+    List.map (\(name, path) -> a [ href path ] [ text name ]) subfolders |>
+      List.intersperse guiPathSeparator
 
 
 packagesView : List Package -> Html
