@@ -1,0 +1,91 @@
+$pagewidth: 960px;
+$grey: #fafafa;
+$blue: rgb(85, 134, 230);
+
+body {
+  font-family: "Open Sans", "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  width: 100%;
+  padding: 20px;
+  background-color: $blue;
+  font-weight: bold;
+  color: white;
+}
+
+a {
+  color: $blue;
+  text-decoration: none;
+}
+
+.clearfix {
+  clear: both;
+}
+
+.page-wrapper {
+  width: $pagewidth;
+  padding: 20px;
+}
+
+.centered {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.box {
+  // background-color: $grey;
+  border: 1px solid darken($grey, 20%);
+  border-radius: 5px;
+}
+
+.box-element {
+  border-top: 1px solid darken($grey, 10%);
+}
+
+.box-header {
+  background-color: $grey;
+  font-weight: bold;
+}
+
+.display {
+  display: block;
+  width: 300px;
+  overflow: hidden;
+  padding: 7px 12px;
+}
+
+.display.element {
+  @extend .box-element;
+}
+
+.folder.view {
+  @extend .box;
+  min-width: 300px;
+}
+
+.packages.view {
+  @extend .box;
+
+
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.icon.left {
+  padding-right: 5px;
+  float:none;
+}
+
+.icon.right {
+  float: none;
+  padding-left: 5px;
+}
