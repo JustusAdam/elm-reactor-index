@@ -12,7 +12,7 @@ import Util exposing (..)
 
 
 iconPath = "open-iconic/png"
-guiPackageSeparator = span [ class "package-separator" ] [ text "/" ]
+guiDependencySeparator = span [ class "package-separator" ] [ text "/" ]
 guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 fileIcon = basicIcon "file-4x.png"
 folderIcon = basicIcon "folder-4x.png"
@@ -25,7 +25,7 @@ clearfix = div [ class "clearfix" ] []
 -- UTILITY FUNCTIONS
 
 
-packageUrl : Package -> String
+packageUrl : Dependency -> String
 packageUrl {account, name, version} =
   "http://package.elm-lang.org/packages"
   `slash` account
@@ -33,7 +33,7 @@ packageUrl {account, name, version} =
   `slash` version
 
 
-accountUrl : Package -> String
+accountUrl : Dependency -> String
 accountUrl {account} = "https://github.com" `slash` account
 
 
@@ -55,11 +55,11 @@ type alias Model =
   { currentFolder : String
   , folders       : List String
   , files         : List String
-  , packages      : List Package
+  , dependencies  : List Dependency
   }
 
 
-type alias Package =
+type alias Dependency =
   { name    : String
   , account : String
   , version : String
@@ -80,7 +80,7 @@ view model =
         , div
           [ class "centered page-wrapper" ]
           [ folderView model
-          , packagesView model.packages
+          , dependenciesView model.dependencies
           ]
         ]
   in
@@ -147,16 +147,16 @@ formatSubpathNavigation path =
       List.intersperse guiPathSeparator
 
 
-packagesView : List Package -> Html
-packagesView packages =
+dependenciesView : List Dependency -> Html
+dependenciesView dependencies =
   div
     [ class "packages view right" ]
     (div [ class "box-header display" ] [ text "Packages" ] ::
-      List.map packageDisplay packages)
+      List.map dependencyView dependencies)
 
 
-packageDisplay : Package -> Html
-packageDisplay package =
+dependencyView : Dependency -> Html
+dependencyView package =
   let
     {account, name, version} = package
   in
@@ -166,7 +166,7 @@ packageDisplay package =
         [ class "package-name left" ]
         [ iconBox "left" packageIcon
         , a [ href <| accountUrl package ] [ text account ]
-        , guiPackageSeparator
+        , guiDependencySeparator
         , a [ href <| packageUrl package ] [ text name ]
         ]
       , div
