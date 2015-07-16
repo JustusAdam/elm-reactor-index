@@ -16,14 +16,14 @@ guiDependencySeparator = span [ class "package-separator" ] [ text "/" ]
 guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 standardIconType = ".png"
 standardIconSize = "4x"
-fileIcon = basicIcon "file"
-folderIcon = basicIcon "folder"
+fileIcon    = basicIcon "file"
+folderIcon  = basicIcon "folder"
 packageIcon = basicIcon "book"
-htmlIcon = basicIcon "browser"
-imageIcon = basicIcon "aperture"
-codeIcon = basicIcon "code"
-elmIcon = basicIcon "cog"
-textIcon = basicIcon "justify-left"
+htmlIcon    = basicIcon "browser"
+imageIcon   = basicIcon "aperture"
+codeIcon    = basicIcon "code"
+elmIcon     = basicIcon "cog"
+textIcon    = basicIcon "justify-left"
 
 endings =
   [ ("elm", elmIcon)
@@ -58,7 +58,7 @@ accountUrl {account} = "https://github.com" `slash` account
 
 
 basicIcon name =
-  img [ src <| iconPath `slash` name ++ "-" ++ standardIconSize ++ standardIconType, width 12, height 12 ] []
+  img [ src <| iconPath `slash` name ++ "-" ++ standardIconSize ++ standardIconType, width 14, height 14 ] []
 
 
 iconBox : String -> Html -> Html
@@ -103,27 +103,27 @@ type alias Package =
 -- VIEW
 
 
-view : Maybe Model -> Html
+view : Model -> Html
 view model =
-  let
-    modelMissing = div [ class "alert" ] [ text "no folder was found" ]
-    view' model =
-      -- let
-      --   lambd a = [ packageDisplay a ]
-      --   packageView = Maybe.withDefault [] (Maybe.map lambd model.package)
-      -- in
-        div
-          []
-          [ pageHeader model
-          , div
-            [ class "centered page-wrapper" ]
-            <| [ folderView model
-               , dependenciesView model.dependencies
-               ]
-                -- ++ packageView
-          ]
-  in
-    model |> Maybe.map view' |> Maybe.withDefault modelMissing
+  -- This causes a runtime error
+  -- > undefined is not an object
+  -- > evaluating 'maybe.ctor'
+  -- if anyone knows why, please tell me what I'm doing wrong
+  -- it compiles fine btw
+  -- let
+  --   packageView = Maybe.withDefault [] (Maybe.map (\a -> [ packageDisplay a ]) model.package)
+  -- in
+    div
+      []
+      [ pageHeader model
+      , div
+        [ class "centered page-wrapper" ]
+        <| [ folderView model
+           , dependenciesView model.dependencies
+           ]
+            -- ++ packageView
+      ]
+
 
 
 pageHeader : Model -> Html
@@ -160,13 +160,13 @@ folderDisplay basefolder folder =
 fileDisplay : String -> String -> Html
 fileDisplay basefolder file =
   let
-   fileClass = if ".elm" `isSuffixOf` file then "elm file-name" else "file-name"
+   fileClass = if ".elm" `isSuffixOf` file then "elm file" else "file"
   in
     div
       [ class "element display" ]
       <| [ a
-        [ class "file", href <| file ]
-        [ iconBox "left" <| getIcon file, span [ class fileClass ] [ text file ] ]
+        [ class fileClass, href <| file ]
+        [ iconBox "left" <| getIcon file, span [ class "file-name" ] [ text file ] ]
       ] ++
         ( if ".elm" `isSuffixOf` file
             then [ a [ class "repl-link", href <| file ++ "?repl" ] [ text "REPL" ]
@@ -231,4 +231,4 @@ main : Signal Html
 main = Signal.constant <| view modelPort
 
 
-port modelPort : Maybe Model
+port modelPort : Model
