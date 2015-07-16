@@ -6,6 +6,7 @@ import Html.Attributes exposing (..)
 import Signal exposing (Signal, Address)
 import String
 import Util exposing (..)
+import Dict exposing (fromList)
 
 
 -- CONSTANTS
@@ -25,7 +26,7 @@ codeIcon    = basicIcon "code"
 elmIcon     = basicIcon "cog"
 textIcon    = basicIcon "justify-left"
 
-endings =
+endings = fromList
   [ ("elm", elmIcon)
   , ("jpg", imageIcon)
   , ("jpeg", imageIcon)
@@ -70,7 +71,7 @@ iconBox position icon =
 
 getIcon : String -> Html
 getIcon file =
-  Maybe.withDefault fileIcon <| find (takeExtension file) endings
+  Maybe.withDefault fileIcon <| Dict.get (takeExtension file) endings
 
 
 -- TYPES

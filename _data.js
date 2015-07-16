@@ -3,7 +3,7 @@
     currentFolder: "test/foo/bar",
     folders: ["one", "two", "three"],
     files: ["answer42.txt", "Index.elm", "Conquer.hs", "photo.jpg"],
-    dependencies: [{ name : "elm-html", account : "evancz", version : "1.0.0" }, { name : "elm-core", account : "elm-lang", version : "2.0.0" }],
+    dependencies: [{ name : "elm-html", account : "evancz", version : "1.0.0" }, { name : "elm-core", account : "elm-lang", version : "2.1.0" }],
     package: {
       version: "1.0.0",
       repository: "https://github.com/foo/bar",
