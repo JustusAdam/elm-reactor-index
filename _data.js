@@ -26,23 +26,23 @@
       "server.log",
       "build.sh"
     ],
-    dependencies: [
-      {
-        name : "elm-html",
-        account : "evancz",
-        version : "1.0.0"
-      },
-      {
-        name : "elm-core",
-        account : "elm-lang",
-        version : "2.1.0"
-      }
-    ],
-    package: {
+    currpackage: {
       version: "1.0.0",
       repository: "https://github.com/foo/bar",
       license: "BSD3",
-      summary: "A new package"
+      summary: "A new package",
+      dependencies: [
+        {
+          name : "elm-html",
+          account : "evancz",
+          version : "1.0.0"
+        },
+        {
+          name : "elm-core",
+          account : "elm-lang",
+          version : "2.1.0"
+        }
+      ]
     }
   }
 })();

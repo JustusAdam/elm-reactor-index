@@ -4,6 +4,8 @@ $light-grey: #fafafa;
 $blue: rgb(17, 132, 206);
 $dark-grey: darken($light-grey, 70%);
 $grey: darken($light-grey, 20%);
+$smallisch-box: 300px;
+$largeisch-box: 600px;
 
 
 body {
@@ -48,16 +50,16 @@ a {
   margin-right: auto;
 }
 
-.package-separator, .path-separator {
+.dependency-separator, .path-separator {
   display: inline-block;
   margin: 0 5px;
 }
 
-.package-name {
+.dependency-name {
   width: 70%;
 }
 
-.package-versions {
+.dependency-versions {
   width: 30%;
 }
 
@@ -113,14 +115,20 @@ a {
 
 .folder.view {
   @extend .box;
-  width: 600px;
+  width: $largeisch-box;
 }
 
-.packages.view {
+.dependencies.view {
   @extend .box;
-  width: 300px;
+  width: $smallisch-box;
 
 }
+
+.package.view {
+  width: $smallisch-box;
+  margin-bottom: 30px;
+}
+
 
 .left {
   float: left;

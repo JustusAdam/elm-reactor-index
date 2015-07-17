@@ -13,7 +13,7 @@ import Dict exposing (fromList)
 
 
 iconPath = "open-iconic/png"
-guiDependencySeparator = span [ class "package-separator" ] [ text "/" ]
+guiDependencySeparator = span [ class "dependency-separator" ] [ text "/" ]
 guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 standardIconType = ".png"
 standardIconSize = "4x"
@@ -145,8 +145,7 @@ type alias Model =
   { currentFolder : String
   , folders       : List String
   , files         : List String
-  , dependencies  : List Dependency
-  , package       : Maybe Package
+  , currpackage   : Package
   }
 
 
@@ -162,6 +161,7 @@ type alias Package =
   , repository : String
   , summary : String
   , license : String
+  , dependencies : List Dependency
   }
 
 
@@ -170,25 +170,17 @@ type alias Package =
 
 view : Model -> Html
 view model =
-  -- This causes a runtime error
-  -- > undefined is not an object
-  -- > evaluating 'maybe.ctor'
-  -- if anyone knows why, please tell me what I'm doing wrong
-  -- it compiles fine btw
-  -- let
-  --   packageView = Maybe.withDefault [] (Maybe.map (\a -> [ packageDisplay a ]) model.package)
-  -- in
-    div
-      []
-      [ pageHeader model
-      , div
-        [ class "centered page-wrapper" ]
-        <| [ folderView model
-           , dependenciesView model.dependencies
-           ]
-           -- ++ packageView
-           ++ [ clearfix ]
+  div
+    []
+    [ pageHeader model
+    , div
+      [ class "centered page-wrapper" ]
+      [ folderView model
+      , packageDisplay model.currpackage
+      , dependenciesView model.currpackage.dependencies
+      , clearfix
       ]
+    ]
 
 
 
@@ -257,8 +249,8 @@ formatSubpathNavigation home path =
 dependenciesView : List Dependency -> Html
 dependenciesView dependencies =
   div
-    [ class "packages view right" ]
-    (div [ class "box-header display" ] [ text "Packages" ] ::
+    [ class "dependencies view right" ]
+    (div [ class "box-header display" ] [ text "Dependencies" ] ::
       List.map dependencyView dependencies)
 
 
@@ -268,16 +260,16 @@ dependencyView package =
     {account, name, version} = package
   in
     div
-      [ class "package display element" ]
+      [ class "dependency display element" ]
       [ div
-        [ class "package-name left" ]
+        [ class "dependency-name left" ]
         [ iconBox "left" packageIcon
         , a [ href <| accountUrl package ] [ text account ]
         , guiDependencySeparator
         , a [ href <| packageUrl package ] [ text name ]
         ]
       , div
-        [ class "package-version right" ]
+        [ class "dependency-version right" ]
         [ text version ]
       ]
 
@@ -285,10 +277,11 @@ dependencyView package =
 packageDisplay : Package -> Html
 packageDisplay {version, summary, repository} =
   div
-    [ class "box" ]
-    [ div [ class "box-item" ] [ text <| "Package Version: " ++ version ]
-    , div [ class "box-item" ] [ text summary ]
-    , div [ class "box-item" ] [ text repository ]
+    [ class "box right view package" ]
+    [ div [ class "box-header display" ] [ text "Package Information" ]
+    , div [ class "element display" ] [ text summary ]
+    , div [ class "element display" ] [ text <| "Package Version: " ++ version ]
+    , div [ class "element display" ] [ text repository ]
     ]
 
 
