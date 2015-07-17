@@ -30,7 +30,7 @@ codeIcon      = basicIcon "code"
 cogIcon       = basicIcon "cog"
 wrenchIcon    = basicIcon "wrench"
 configIcon    = wrenchIcon
-textIcon      = basicIcon "justify-left"
+textIcon      = basicIcon "document"
 dataIcon      = basicIcon "spreadsheet"
 keyIcon       = basicIcon "key"
 legalIcon     = keyIcon
@@ -73,15 +73,19 @@ endings = fromList
   , ("json", dataIcon)
   , ("yml", dataIcon)
   , ("xml", dataIcon)
-
-  -- Misc
-  , ("txt", textIcon)
-  , ("", fileIcon)
-  , ("html", htmlIcon)
-  , ("lock", lockIcon)
-  , ("log", listIcon)
   , ("db", dataDaseIcon)
   , ("sqlite", dataDaseIcon)
+
+  -- Text files
+  , ("txt", textIcon)
+  , ("log", listIcon)
+
+  -- Misc
+  , ("md", textIcon)
+  , ("", fileIcon)
+  , ("html", htmlIcon)
+  , ("htm", htmlIcon)
+  , ("lock", lockIcon)
   ]
 
 
