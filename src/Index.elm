@@ -109,20 +109,20 @@ clearfix = div [ class "clearfix" ] []
 packageUrl : Dependency -> String
 packageUrl {account, name, version} =
   "http://package.elm-lang.org/packages"
-  `slash` account
-  `slash` name
-  `slash` version
+  </> account
+  </> name
+  </> version
 
 
 accountUrl : Dependency -> String
-accountUrl {account} = "https://github.com" `slash` account
+accountUrl {account} = "https://github.com" </> account
 
 
 basicIcon = sizedIcon standardIconDimensions
 
 
 sizedIcon size name =
-  img [ src <| iconPath `slash` name ++ "-" ++ standardIconSize ++ standardIconType, width size, height size ] []
+  img [ src <| iconPath </> name ++ "-" ++ standardIconSize ++ standardIconType, width size, height size ] []
 
 
 iconBox : String -> Html -> Html
@@ -246,9 +246,9 @@ formatSubpathNavigation : Html -> String -> List Html
 formatSubpathNavigation home path =
   let
     subfolderNames = splitPath path
-    subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" <| "" :: subfolderNames
+    subFolderPaths = List.drop 1 <| List.scanl (flip (</>)) "" <| "" :: subfolderNames
     subfolderNameRepresentation = List.map text subfolderNames
-    subfolders = List.map2 ((,)) (home :: subfolderNameRepresentation) subFolderPaths
+    subfolders = (home :: subfolderNameRepresentation) >< subFolderPaths
   in
     List.map (\(name, path) -> a [ href path ] [ name ]) subfolders |>
       List.intersperse guiPathSeparator

@@ -7,8 +7,8 @@ import String
 isSuffixOf = String.endsWith
 
 
-slash : String -> String -> String
-slash a b =
+(</>) : String -> String -> String
+a </> b =
   if "/" `isSuffixOf` a
     then a ++ b
     else a ++ "/" ++ b
@@ -46,3 +46,7 @@ or ma mb =
   case ma of
     Nothing -> mb
     Just _ -> ma
+
+
+(><) : List a -> List b -> List (a,b)
+(><) = List.map2 (,)
