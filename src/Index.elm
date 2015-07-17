@@ -17,25 +17,81 @@ guiDependencySeparator = span [ class "package-separator" ] [ text "/" ]
 guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 standardIconType = ".png"
 standardIconSize = "4x"
-fileIcon    = basicIcon "file"
-folderIcon  = basicIcon "folder"
-packageIcon = basicIcon "book"
-htmlIcon    = basicIcon "browser"
-imageIcon   = basicIcon "aperture"
-codeIcon    = basicIcon "code"
-elmIcon     = basicIcon "cog"
-textIcon    = basicIcon "justify-left"
+standardIconDimensions = 14
+homeIcon size = sizedIcon size "home"
+homeIconLarge = homeIcon 18
+homeIconSmall = homeIcon standardIconDimensions
+fileIcon      = basicIcon "file"
+folderIcon    = basicIcon "folder"
+packageIcon   = basicIcon "book"
+htmlIcon      = basicIcon "browser"
+imageIcon     = basicIcon "aperture"
+codeIcon      = basicIcon "code"
+cogIcon       = basicIcon "cog"
+wrenchIcon    = basicIcon "wrench"
+configIcon    = wrenchIcon
+textIcon      = basicIcon "justify-left"
+dataIcon      = basicIcon "spreadsheet"
+keyIcon       = basicIcon "key"
+legalIcon     = keyIcon
+lockIcon      = basicIcon "lock-locked"
+audioIcon     = basicIcon "audio"
+listIcon      = basicIcon "list"
+hardDriveIcon = basicIcon "hard-drive"
+dataDaseIcon  = hardDriveIcon
+terminalIcon  = basicIcon "terminal"
+
 
 endings = fromList
-  [ ("elm", elmIcon)
+  [
+  -- Code
+    ("elm", codeIcon)
+  , ("hs", codeIcon)
+  , ("lhs", codeIcon)
+  , ("js", codeIcon)
+  , ("php", codeIcon)
+  , ("py", codeIcon)
+  , ("rb", codeIcon)
+  , ("coffee", codeIcon)
+  , ("sh", terminalIcon)
+  , ("bash", terminalIcon)
+
+  -- Images
   , ("jpg", imageIcon)
   , ("jpeg", imageIcon)
   , ("png", imageIcon)
   , ("gif", imageIcon)
-  , ("html", htmlIcon)
-  , ("", fileIcon)
-  , ("hs", codeIcon)
+
+  -- Audio
+  , ("mp3", audioIcon)
+  , ("wma", audioIcon)
+  , ("ogg", audioIcon)
+  , ("oga", audioIcon)
+  , ("flac", audioIcon)
+
+  -- Data formats
+  , ("json", dataIcon)
+  , ("yml", dataIcon)
+  , ("xml", dataIcon)
+
+  -- Misc
   , ("txt", textIcon)
+  , ("", fileIcon)
+  , ("html", htmlIcon)
+  , ("lock", lockIcon)
+  , ("log", listIcon)
+  , ("db", dataDaseIcon)
+  , ("sqlite", dataDaseIcon)
+  ]
+
+
+fullFileIcons = fromList
+  [ (".gitignore", configIcon)
+  , ("elm-package.json", configIcon)
+  , ("bower.json", configIcon)
+  , ("license", legalIcon)
+  , ("license.txt", legalIcon)
+  , ("makefile", configIcon)
   ]
 
 
@@ -58,8 +114,11 @@ accountUrl : Dependency -> String
 accountUrl {account} = "https://github.com" `slash` account
 
 
-basicIcon name =
-  img [ src <| iconPath `slash` name ++ "-" ++ standardIconSize ++ standardIconType, width 14, height 14 ] []
+basicIcon = sizedIcon standardIconDimensions
+
+
+sizedIcon size name =
+  img [ src <| iconPath `slash` name ++ "-" ++ standardIconSize ++ standardIconType, width size, height size ] []
 
 
 iconBox : String -> Html -> Html
@@ -70,8 +129,9 @@ iconBox position icon =
 
 
 getIcon : String -> Html
-getIcon file =
-  Maybe.withDefault fileIcon <| Dict.get (takeExtension file) endings
+getIcon filename =
+  let file = String.toLower filename in
+  Maybe.withDefault fileIcon <| Dict.get file fullFileIcons `or` Dict.get (takeExtension file) endings
 
 
 -- TYPES
@@ -122,7 +182,8 @@ view model =
         <| [ folderView model
            , dependenciesView model.dependencies
            ]
-            -- ++ packageView
+           -- ++ packageView
+           ++ [ clearfix ]
       ]
 
 
@@ -133,7 +194,7 @@ pageHeader {currentFolder} =
     []
     [ div
       [ class "header-wrapper" ]
-      [ div [ class "current-folder left" ] <| formatSubpathNavigation currentFolder
+      [ div [ class "current-folder left" ] <| formatSubpathNavigation  homeIconSmall currentFolder
       , clearfix
       ]
     ]
@@ -143,23 +204,24 @@ folderView : Model -> Html
 folderView {currentFolder, folders, files} =
   section
     [ class "folder-navigation" ]
-    [ h2 [] <| formatSubpathNavigation currentFolder
+    [ h2 [] <| formatSubpathNavigation homeIconLarge currentFolder
     , div
       [ class "folder view left" ]
       (div [ class "box-header display" ] [ text "File Navigation" ] ::
-        List.map (folderDisplay currentFolder) folders ++
-          List.map (fileDisplay currentFolder) files
+        -- This for some reason does not properly sort alphabetically ...
+        List.map folderDisplay (List.sort folders) ++
+          List.map fileDisplay (List.sort files)
       )
     ]
 
 
-folderDisplay : String -> String -> Html
-folderDisplay basefolder folder =
+folderDisplay : String -> Html
+folderDisplay folder =
   a [ class "folder element display", href <| folder ] [ iconBox "left" folderIcon, text folder ]
 
 
-fileDisplay : String -> String -> Html
-fileDisplay basefolder file =
+fileDisplay : String -> Html
+fileDisplay file =
   let
    fileClass = if ".elm" `isSuffixOf` file then "elm file" else "file"
   in
@@ -176,14 +238,15 @@ fileDisplay basefolder file =
         )
 
 
-formatSubpathNavigation : String -> List Html
-formatSubpathNavigation path =
+formatSubpathNavigation : Html -> String -> List Html
+formatSubpathNavigation home path =
   let
     subfolderNames = splitPath path
-    subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" subfolderNames
-    subfolders = List.map2 ((,)) subfolderNames subFolderPaths
+    subFolderPaths = List.drop 1 <| List.scanl (flip slash) "" <| "" :: subfolderNames
+    subfolderNameRepresentation = List.map text subfolderNames
+    subfolders = List.map2 ((,)) (home :: subfolderNameRepresentation) subFolderPaths
   in
-    List.map (\(name, path) -> a [ href path ] [ text name ]) subfolders |>
+    List.map (\(name, path) -> a [ href path ] [ name ]) subfolders |>
       List.intersperse guiPathSeparator
 
 

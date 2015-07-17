@@ -39,3 +39,10 @@ takeExtension str =
     case String.split "." str of
       [] -> ""
       (_::t) -> loop t
+
+
+or : Maybe a -> Maybe a -> Maybe a
+or ma mb =
+  case ma of
+    Nothing -> mb
+    Just _ -> ma
