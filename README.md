@@ -2,6 +2,10 @@
 
 A new index page/folder navigation for [elm-reactor](https://github.com/elm-lang/elm-reactor)
 
+## Current status
+
+![phantom.js screenshot rendering](/screenshots/elm-reactor-index-1280.png?raw=true "Current Screenshot")
+
 ## Testing
 
 Needs a [sass](http://sass-lang.org) compiler, such as [compass](http://compass-style.org), to compile the stylesheets.
