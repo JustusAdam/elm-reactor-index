@@ -172,8 +172,11 @@ view : Model -> Html
 view model =
   let
     packageDependants cpackage =
-      [ packageDisplay cpackage
-      , dependenciesView cpackage.dependencies
+      [ div
+        [ class "right" ]
+        [ packageDisplay cpackage
+        , dependenciesView cpackage.dependencies
+        ]
       ]
   in
     div
@@ -254,7 +257,7 @@ formatSubpathNavigation home path =
 dependenciesView : List Dependency -> Html
 dependenciesView dependencies =
   div
-    [ class "dependencies view right" ]
+    [ class "dependencies view" ]
     (div [ class "box-header display" ] [ text "Dependencies" ] ::
       List.map dependencyView dependencies)
 
@@ -282,7 +285,7 @@ dependencyView package =
 packageDisplay : Package -> Html
 packageDisplay {version, summary, repository} =
   div
-    [ class "box right view package" ]
+    [ class "box view package" ]
     [ div [ class "box-header display" ] [ text "Package Information" ]
     , div [ class "element display" ] [ text summary ]
     , div [ class "element display" ] [ text <| "Package Version: " ++ version ]
