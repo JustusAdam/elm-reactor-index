@@ -145,7 +145,7 @@ type alias Model =
   { currentFolder : String
   , folders       : List String
   , files         : List String
-  , currpackage   : Package
+  , currpackage   : Maybe Package
   }
 
 
@@ -170,17 +170,22 @@ type alias Package =
 
 view : Model -> Html
 view model =
-  div
-    []
-    [ pageHeader model
-    , div
-      [ class "centered page-wrapper" ]
-      [ folderView model
-      , packageDisplay model.currpackage
-      , dependenciesView model.currpackage.dependencies
-      , clearfix
+  let
+    packageDependants cpackage =
+      [ packageDisplay cpackage
+      , dependenciesView cpackage.dependencies
       ]
-    ]
+  in
+    div
+      []
+      [ pageHeader model
+      , div
+        [ class "centered page-wrapper" ]
+        <| [ folderView model
+           ]
+           ++ Maybe.withDefault [] (Maybe.map packageDependants model.currpackage)
+           ++ [ clearfix ]
+      ]
 
 
 
