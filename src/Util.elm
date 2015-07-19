@@ -41,12 +41,5 @@ takeExtension str =
       (_::t) -> loop t
 
 
-or : Maybe a -> Maybe a -> Maybe a
-or ma mb =
-  case ma of
-    Nothing -> mb
-    Just _ -> ma
-
-
 (><) : List a -> List b -> List (a,b)
 (><) = List.map2 (,)

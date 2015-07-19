@@ -7,6 +7,7 @@ import Signal exposing (Signal, Address)
 import String
 import Util exposing (..)
 import Dict exposing (fromList)
+import Maybe.Extra exposing (or)
 
 
 -- CONSTANTS
@@ -18,7 +19,7 @@ guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
 standardIconType = ".png"
 standardIconSize = "4x"
 standardIconDimensions = 14
-homeIcon size = sizedIcon size "home"
+homeIcon      = flip sizedIcon "home"
 homeIconLarge = homeIcon 18
 homeIconSmall = homeIcon standardIconDimensions
 fileIcon      = basicIcon "file"
@@ -212,7 +213,6 @@ folderView {currentFolder, folders, files} =
     , div
       [ class "folder view left" ]
       (div [ class "box-header display" ] [ text "File Navigation" ] ::
-        -- This for some reason does not properly sort alphabetically ...
         List.map folderDisplay (List.sort folders) ++
           List.map fileDisplay (List.sort files)
       )
