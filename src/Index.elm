@@ -11,10 +11,12 @@ import Dict exposing (fromList)
 
 -- CONSTANTS
 
+(=>) = (,)
 
 iconPath = "open-iconic/png"
-guiDependencySeparator = span [ class "dependency-separator" ] [ text "/" ]
-guiPathSeparator = span [ class "path-separator" ] [ text "/" ]
+separatorStyle = style [ "display" => "inline-block", "margin" => "0 5px" ]
+guiDependencySeparator = span [ separatorStyle ] [ text "/" ]
+guiPathSeparator = span [ separatorStyle ] [ text "/" ]
 standardIconType = ".png"
 standardIconSize = "4x"
 standardIconDimensions = 14
@@ -41,6 +43,26 @@ hardDriveIcon = basicIcon "hard-drive"
 dataDaseIcon  = hardDriveIcon
 terminalIcon  = basicIcon "terminal"
 
+pageWidth     = "960px"
+smallBoxWidth = "300px"
+largeBoxWidth = "600px"
+padding       = "20px"
+floatLeft     = [ "float" => "left" ]
+floatRight    = [ "float" => "right" ]
+boxStyles     = [ "border" => "1px solid #c7c7c7"
+                , "border-radius" => "5px"
+                ]
+boxHeaderStyles = [ "background-color" => "#fafafa"
+                  , "text-align" => "center"
+                  ]
+blockStyles   = [ "display" => "block"
+                , "overflow" => "hidden"
+                , "padding" => "7px 12px"
+                ]
+boxItemStyles = [ "border-top" => "1px solid #e1e1e1" ]
+linkStyles    = [ "color" => "#1184ce"
+                , "text-decoration" => "none"
+                ]
 
 endings = fromList
   [
@@ -100,7 +122,8 @@ fullFileIcons = fromList
 
 
 clearfix : Html
-clearfix = div [ class "clearfix" ] []
+clearfix =
+  div [ style [ "clear" => "both" ] ] []
 
 
 -- UTILITY FUNCTIONS
@@ -127,9 +150,17 @@ sizedIcon size name =
 
 iconBox : String -> Html -> Html
 iconBox position icon =
-  span
-    [ class <| "icon " ++ position ]
-    [ icon ]
+  let baseStyles =
+        [ "padding" => "2px 0" ]
+      styles =
+        if position == "left"
+          then baseStyles ++ [ "padding-right" => "5px" ]
+          else baseStyles ++ [ "padding-left" => "5px" ]
+  in  span
+        [ class <| "icon " ++ position
+        , style styles
+        ]
+        [ icon ]
 
 
 getIcon : String -> Html
@@ -167,14 +198,25 @@ type alias Package =
 
 -- VIEW
 
-
 view : Model -> Html
 view model =
   div
-    []
+    [ style
+        [ "font-family" => """"Open Sans", "Arial", sans-serif"""
+        , "margin" => "0"
+        , "padding" => "0"
+        , "background-color" => "white"
+        ]
+    ]
     [ pageHeader model
     , div
-      [ class "centered page-wrapper" ]
+      [ class "centered page-wrapper"
+      , style [ "width" => pageWidth
+              , "padding" => padding
+              , "margin-left" => "auto"
+              , "margin-right" => "auto"
+              ]
+      ]
       [ folderView model
       , packageDisplay model.currpackage
       , dependenciesView model.currpackage.dependencies
@@ -187,10 +229,22 @@ view model =
 pageHeader : Model -> Html
 pageHeader {currentFolder} =
   header
-    []
+    [ style
+        [ "width" => "100%"
+        , "background-color" => "#1184ce"
+        , "font-weight" => "bold"
+        , "color" => "white"
+        , "box-shadow" => "0 0 7px #47474"
+        ]
+    ]
     [ div
-      [ class "header-wrapper" ]
-      [ div [ class "current-folder left" ] <| formatSubpathNavigation  homeIconSmall currentFolder
+      [ class "header-wrapper"
+      , style [ "padding" => padding
+              ]
+      ]
+      [ div [ class "current-folder left"
+            , style floatLeft
+            ] <| formatSubpathNavigation True homeIconSmall currentFolder
       , clearfix
       ]
     ]
@@ -200,10 +254,12 @@ folderView : Model -> Html
 folderView {currentFolder, folders, files} =
   section
     [ class "folder-navigation" ]
-    [ h2 [] <| formatSubpathNavigation homeIconLarge currentFolder
+    [ h2 [] <| formatSubpathNavigation False homeIconLarge currentFolder
     , div
-      [ class "folder view left" ]
-      (div [ class "box-header display" ] [ text "File Navigation" ] ::
+      [ class "folder view left"
+      , style <| boxStyles ++ floatLeft ++ [ "width" => largeBoxWidth ]
+      ]
+      (div [ style <| boxHeaderStyles ++ blockStyles ] [ text "File Navigation" ] ::
         -- This for some reason does not properly sort alphabetically ...
         List.map folderDisplay (List.sort folders) ++
           List.map fileDisplay (List.sort files)
@@ -213,44 +269,85 @@ folderView {currentFolder, folders, files} =
 
 folderDisplay : String -> Html
 folderDisplay folder =
-  a [ class "folder element display", href <| folder ] [ iconBox "left" folderIcon, text folder ]
+  a [ class "folder element display"
+    , href <| folder
+    , style <| linkStyles ++ blockStyles ++ boxItemStyles
+    ] [ iconBox "left" folderIcon, text folder ]
 
+elmFileLinks : Bool -> String -> List Html
+elmFileLinks isElmFile file =
+  let
+    styles =
+      linkStyles ++ floatRight ++
+        [ "padding" => "0 5px"
+        , "color" => "#c7c7c7"
+        ]
+  in
+    if isElmFile
+      then [ a [ class "repl-link"
+               , href <| file ++ "?repl"
+               , style styles
+               ] [ text "REPL" ]
+           , a [ class "debug-link"
+               , href <| file ++ "?debug"
+               , style styles
+               ] [ text "Debug" ] ]
+      else []
 
 fileDisplay : String -> Html
 fileDisplay file =
   let
-   fileClass = if ".elm" `isSuffixOf` file then "elm file" else "file"
+    isElmFile = ".elm" `isSuffixOf` file
   in
     div
-      [ class "element display" ]
+      [ class "element display"
+      , style <| blockStyles ++ boxItemStyles
+      ]
       <| [ a
-        [ class fileClass, href <| file ]
-        [ iconBox "left" <| getIcon file, span [ class "file-name" ] [ text file ] ]
-      ] ++
-        ( if ".elm" `isSuffixOf` file
-            then [ a [ class "repl-link", href <| file ++ "?repl" ] [ text "REPL" ]
-                 , a [ class "debug-link", href <| file ++ "?debug" ] [ text "Debug" ] ]
-            else []
-        )
+        [ href <| file
+        , style linkStyles
+        ]
+        [ iconBox "left" <| getIcon file
+        , span [ class "file-name"
+               , style [ "display" => "inline-block"
+                       , "width" => if isElmFile then "75%" else "90%"
+                       ]
+               ] [ text file ]
+        ]
+      ] ++ (elmFileLinks isElmFile file)
 
+subpathNavigationStyles : Bool -> List (String, String)
+subpathNavigationStyles negative =
+  if negative
+    then linkStyles ++ [ "color" => "#fafafa" ]
+    else linkStyles
 
-formatSubpathNavigation : Html -> String -> List Html
-formatSubpathNavigation home path =
+formatSubpathNavigation : Bool -> Html -> String -> List Html
+formatSubpathNavigation negative home path =
   let
     subfolderNames = splitPath path
     subFolderPaths = List.drop 1 <| List.scanl (flip (</>)) "" <| "" :: subfolderNames
     subfolderNameRepresentation = List.map text subfolderNames
     subfolders = (home :: subfolderNameRepresentation) >< subFolderPaths
   in
-    List.map (\(name, path) -> a [ href path ] [ name ]) subfolders |>
-      List.intersperse guiPathSeparator
+    subfolders
+      |>List.map (\(name, path) ->
+                  a [ href path
+                    , style <| subpathNavigationStyles negative
+                    ] [ name ])
+      |> List.intersperse guiPathSeparator
 
 
 dependenciesView : List Dependency -> Html
 dependenciesView dependencies =
   div
-    [ class "dependencies view right" ]
-    (div [ class "box-header display" ] [ text "Dependencies" ] ::
+    [ class "dependencies view right"
+    , style <| boxStyles ++ floatRight ++
+        [ "width" => smallBoxWidth ]
+    ]
+    (div [ class "box-header display"
+         , style <| boxHeaderStyles ++ blockStyles
+         ] [ text "Dependencies" ] ::
       List.map dependencyView dependencies)
 
 
@@ -260,16 +357,22 @@ dependencyView package =
     {account, name, version} = package
   in
     div
-      [ class "dependency display element" ]
+      [ class "dependency display element"
+      , style <| blockStyles ++ boxItemStyles
+      ]
       [ div
-        [ class "dependency-name left" ]
+        [ class "dependency-name left"
+        , style <| [ "width" => "70%" ] ++ floatLeft
+        ]
         [ iconBox "left" packageIcon
-        , a [ href <| accountUrl package ] [ text account ]
+        , a [ href <| accountUrl package, style linkStyles ] [ text account ]
         , guiDependencySeparator
-        , a [ href <| packageUrl package ] [ text name ]
+        , a [ href <| packageUrl package, style linkStyles ] [ text name ]
         ]
       , div
-        [ class "dependency-version right" ]
+        [ class "dependency-version right"
+        , style <| [ "width" => "30%" ] ++ floatRight
+        ]
         [ text version ]
       ]
 
@@ -277,11 +380,16 @@ dependencyView package =
 packageDisplay : Package -> Html
 packageDisplay {version, summary, repository} =
   div
-    [ class "box right view package" ]
-    [ div [ class "box-header display" ] [ text "Package Information" ]
-    , div [ class "element display" ] [ text summary ]
-    , div [ class "element display" ] [ text <| "Package Version: " ++ version ]
-    , div [ class "element display" ] [ text repository ]
+    [ class "box right view package"
+    , style <| boxStyles ++ floatRight ++
+        [ "margin-bottom" => "30px"
+        , "width" => smallBoxWidth
+        ]
+    ]
+    [ div [ style <| boxHeaderStyles ++ blockStyles ] [ text "Package Information" ]
+    , div [ style <| blockStyles ++ boxItemStyles ] [ text summary ]
+    , div [ style <| blockStyles ++ boxItemStyles ] [ text <| "Package Version: " ++ version ]
+    , div [ style <| blockStyles ++ boxItemStyles ] [ text repository ]
     ]
 
 
