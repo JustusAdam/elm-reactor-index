@@ -157,11 +157,10 @@ iconBox position icon =
         if position == "left"
           then baseStyles ++ [ "padding-right" => "5px" ]
           else baseStyles ++ [ "padding-left" => "5px" ]
-  in  span
-        [ class <| "icon " ++ position
-        , style styles
-        ]
-        [ icon ]
+  in
+    span
+      [ style styles ]
+      [ icon ]
 
 
 getIcon : String -> Html
@@ -201,28 +200,36 @@ type alias Package =
 
 view : Model -> Html
 view model =
-  div
-    [ style
-        [ "font-family" => """"Open Sans", "Arial", sans-serif"""
-        , "margin" => "0"
-        , "padding" => "0"
-        , "background-color" => "white"
+  let
+    packageDependants cpackage =
+      [ div
+        [ style <| "width" => smallBoxWidth :: "margin-top" => "30px" :: floatRight ]
+        [ packageDisplay cpackage
+        , dependenciesView cpackage.dependencies
         ]
-    ]
-    [ pageHeader model
-    , div
-      [ class "centered page-wrapper"
-      , style [ "width" => pageWidth
-              , "padding" => padding
-              , "margin-left" => "auto"
-              , "margin-right" => "auto"
-              ]
       ]
-      <| [ folderView model
-         ]
-         ++ Maybe.withDefault [] (Maybe.map packageDependants model.currpackage)
-         ++ [ clearfix ]
-    ]
+  in
+    div
+      [ style
+          [ "font-family" => """"Open Sans", "Arial", sans-serif"""
+          , "margin" => "0"
+          , "padding" => "0"
+          , "background-color" => "white"
+          ]
+      ]
+      [ pageHeader model
+      , div
+        [ style [ "width" => pageWidth
+                , "padding" => padding
+                , "margin-left" => "auto"
+                , "margin-right" => "auto"
+                ]
+        ]
+        <| [ folderView model
+           ]
+           ++ Maybe.withDefault [] (Maybe.map packageDependants model.currpackage)
+           ++ [ clearfix ]
+      ]
 
 
 
@@ -238,12 +245,10 @@ pageHeader {currentFolder} =
         ]
     ]
     [ div
-      [ class "header-wrapper"
-      , style [ "padding" => padding
+      [ style [ "padding" => padding
               ]
       ]
-      [ div [ class "current-folder left"
-            , style floatLeft
+      [ div [ style floatLeft
             ] <| formatSubpathNavigation True homeIconSmall currentFolder
       , clearfix
       ]
@@ -253,12 +258,10 @@ pageHeader {currentFolder} =
 folderView : Model -> Html
 folderView {currentFolder, folders, files} =
   section
-    [ class "folder-navigation" ]
+    [ style floatLeft ]
     [ h2 [] <| formatSubpathNavigation False homeIconLarge currentFolder
     , div
-      [ class "folder view left"
-      , style <| boxStyles ++ floatLeft ++ [ "width" => largeBoxWidth ]
-      ]
+      [ style <| boxStyles ++ floatLeft ++ [ "width" => largeBoxWidth ] ]
       (div [ style <| boxHeaderStyles ++ blockStyles ] [ text "File Navigation" ] ::
         List.map folderDisplay (List.sort folders) ++
           List.map fileDisplay (List.sort files)
@@ -268,8 +271,7 @@ folderView {currentFolder, folders, files} =
 
 folderDisplay : String -> Html
 folderDisplay folder =
-  a [ class "folder element display"
-    , href <| folder
+  a [ href folder
     , style <| linkStyles ++ blockStyles ++ boxItemStyles
     ] [ iconBox "left" folderIcon, text folder ]
 
@@ -283,12 +285,10 @@ elmFileLinks isElmFile file =
         ]
   in
     if isElmFile
-      then [ a [ class "repl-link"
-               , href <| file ++ "?repl"
+      then [ a [ href <| file ++ "?repl"
                , style styles
                ] [ text "REPL" ]
-           , a [ class "debug-link"
-               , href <| file ++ "?debug"
+           , a [ href <| file ++ "?debug"
                , style styles
                ] [ text "Debug" ] ]
       else []
@@ -299,16 +299,13 @@ fileDisplay file =
     isElmFile = ".elm" `isSuffixOf` file
   in
     div
-      [ class "element display"
-      , style <| blockStyles ++ boxItemStyles
-      ]
+      [ style <| blockStyles ++ boxItemStyles ]
       <| [ a
         [ href <| file
         , style linkStyles
         ]
         [ iconBox "left" <| getIcon file
-        , span [ class "file-name"
-               , style [ "display" => "inline-block"
+        , span [ style [ "display" => "inline-block"
                        , "width" => if isElmFile then "75%" else "90%"
                        ]
                ] [ text file ]
@@ -340,12 +337,10 @@ formatSubpathNavigation negative home path =
 dependenciesView : List Dependency -> Html
 dependenciesView dependencies =
   div
-    [ class "dependencies view right"
-    , style <| boxStyles ++ floatRight ++
+    [ style <| boxStyles ++ floatRight ++
         [ "width" => smallBoxWidth ]
     ]
-    (div [ class "box-header display"
-         , style <| boxHeaderStyles ++ blockStyles
+    (div [ style <| boxHeaderStyles ++ blockStyles
          ] [ text "Dependencies" ] ::
       List.map dependencyView dependencies)
 
@@ -356,22 +351,16 @@ dependencyView package =
     {account, name, version} = package
   in
     div
-      [ class "dependency display element"
-      , style <| blockStyles ++ boxItemStyles
-      ]
+      [ style <| blockStyles ++ boxItemStyles ]
       [ div
-        [ class "dependency-name left"
-        , style <| [ "width" => "70%" ] ++ floatLeft
-        ]
+        [ style <| [ "width" => "70%" ] ++ floatLeft ]
         [ iconBox "left" packageIcon
         , a [ href <| accountUrl package, style linkStyles ] [ text account ]
         , guiDependencySeparator
         , a [ href <| packageUrl package, style linkStyles ] [ text name ]
         ]
       , div
-        [ class "dependency-version right"
-        , style <| [ "width" => "30%" ] ++ floatRight
-        ]
+        [ style <| [ "width" => "30%" ] ++ floatRight ]
         [ text version ]
       ]
 
@@ -379,8 +368,7 @@ dependencyView package =
 packageDisplay : Package -> Html
 packageDisplay {version, summary, repository} =
   div
-    [ class "box right view package"
-    , style <| boxStyles ++ floatRight ++
+    [ style <| boxStyles ++ floatRight ++
         [ "margin-bottom" => "30px"
         , "width" => smallBoxWidth
         ]
